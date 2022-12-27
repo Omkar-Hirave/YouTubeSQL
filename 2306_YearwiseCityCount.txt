@@ -1,0 +1,18 @@
+/*Write a SQL query to identify yearwise count of new cities where udaan has started their operations */
+create table business_city_2306 (
+business_date date,
+city_id int
+);
+
+insert into business_city
+values(cast('2020-01-02' as date),3),(cast('2020-07-01' as date),7),(cast('2021-01-01' as date),3),(cast('2021-02-03' as date),19)
+,(cast('2022-12-01' as date),3),(cast('2022-12-15' as date),3),(cast('2022-02-28' as date),12);
+
+SELECT * FROM business_city_2306;
+
+WITH cte1 AS(
+SELECT *,DENSE_RANK() OVER(PARTITION BY city_id ORDER BY business_date) AS rnk , YEAR(business_date) AS "year" FROM business_city_2306)
+SELECT year , COUNT(city_id) AS total_new_cities 
+FROM cte1 
+WHERE rnk = 1
+GROUP BY year;
