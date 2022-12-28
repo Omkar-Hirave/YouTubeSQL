@@ -1,0 +1,76 @@
+/*Write a SQL query to return all employees whose salary is same in same department
+*/
+--CREATING THE TABLE AND INSERTING THE VALUES
+CREATE TABLE emp_salary
+(
+    emp_id INTEGER  NOT NULL,
+    name NVARCHAR(20)  NOT NULL,
+    salary NVARCHAR(30),
+    dept_id INTEGER
+);
+
+
+INSERT INTO emp_salary
+(emp_id, name, salary, dept_id)
+VALUES(101, 'sohan', '3000', '11'),
+(102, 'rohan', '4000', '12'),
+(103, 'mohan', '5000', '13'),
+(104, 'cat', '3000', '11'),
+(105, 'suresh', '4000', '12'),
+(109, 'mahesh', '7000', '12'),
+(108, 'kamal', '8000', '11'); 
+
+--DISPLAYING THE TABLE VALUES
+mysql> SELECT * FROM emp_salary;
++--------+--------+--------+---------+
+| emp_id | name   | salary | dept_id |
++--------+--------+--------+---------+
+|    101 | sohan  | 3000   |      11 |
+|    102 | rohan  | 4000   |      12 |
+|    103 | mohan  | 5000   |      13 |
+|    104 | cat    | 3000   |      11 |
+|    105 | suresh | 4000   |      12 |
+|    109 | mahesh | 7000   |      12 |
+|    108 | kamal  | 8000   |      11 |
++--------+--------+--------+---------+
+7 rows in set (0.00 sec)
+
+/*The Solution is*/
+--Using INNER JOINS
+WITH SameSalary AS(
+SELECT dept_id , salary , COUNT(*) AS cnt 
+FROM emp_salary 
+GROUP BY dept_id , salary 
+HAVING COUNT(*) > 1)
+SELECT e.* FROM emp_salary e INNER JOIN SameSalary s 
+ON e.salary = s.salary 
+AND e.dept_id = s.dept_id;
+
+--Using Left join
+WITH SameSalary AS(
+SELECT dept_id,salary,COUNT(2) AS cnt 
+FROM emp_salary
+GROUP BY dept_id , salary 
+HAVING COUNT(2) = 1 )
+SELECT e.* FROM emp_salary e LEFT JOIN SameSalary s 
+ON e.dept_id = s.dept_id 
+AND e.salary = s.salary
+WHERE s.dept_id IS  NULL
+
+--USING Window functions
+
+WITH SameSalary AS(
+SELECT * , COUNT(*) OVER(PARTITION BY dept_id , salary) AS cnt 
+FROM emp_salary)
+SELECT * FROM SameSalary WHERE cnt > 1
+
+
++--------+--------+--------+---------+
+| emp_id | name   | salary | dept_id |
++--------+--------+--------+---------+
+|    101 | sohan  | 3000   |      11 |
+|    102 | rohan  | 4000   |      12 |
+|    104 | cat    | 3000   |      11 |
+|    105 | suresh | 4000   |      12 |
++--------+--------+--------+---------+
+4 rows in set (0.01 sec)
