@@ -1,0 +1,56 @@
+/*
+A company wants to hire new employees .The budget of the company for the salaries is $70000.The company criteria for hiring is :
+Keep hiring the senior with the smallest salary until you cannot hire any more seniors .
+Use the remaining budget to hire the junior with smallest salary
+Keep hiring the junior with the smallest salary until you cannot hire more juniors
+Write an SQL query to find the seniors and juniors hired under the mentioned criteria
+*/
+
+--CREATING THE TABLES AND INSERTING THE VALUES
+create table candidates (
+emp_id int,
+experience varchar(20),
+salary int
+);
+
+insert into candidates values
+(1,'Junior',10000),(2,'Junior',15000),(3,'Junior',40000),(4,'Senior',16000),(5,'Senior',20000),(6,'Senior',50000);
+
+--DISPLAYING THE TABLE VALUES
+ SELECT * FROM candidates;
++--------+------------+--------+
+| emp_id | experience | salary |
++--------+------------+--------+
+|      1 | Junior     |  10000 |
+|      2 | Junior     |  15000 |
+|      3 | Junior     |  40000 |
+|      4 | Senior     |  16000 |
+|      5 | Senior     |  20000 |
+|      6 | Senior     |  50000 |
++--------+------------+--------+
+6 rows in set (0.00 sec)
+
+
+/*The solution is */
+WITH total_sal AS
+(SELECT emp_id , experience , salary ,
+SUM(salary) OVER(PARTITION BY experience ORDER BY salary ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW ) as running_sal
+FROM candidates),
+senior AS(
+SELECT emp_id , experience , salary FROM total_sal 
+WHERE experience = 'senior' AND running_sal <=70000)
+SELECT emp_id , experience , salary FROM total_sal 
+WHERE running_sal <=70000 -(SELECT SUM(salary) FROM senior) 
+AND experience ='junior'
+UNION ALL
+SELECT emp_id , experience , salary FROM senior
+
++--------+------------+--------+
+| emp_id | experience | salary |
++--------+------------+--------+
+|      1 | Junior     |  10000 |
+|      2 | Junior     |  15000 |
+|      4 | Senior     |  16000 |
+|      5 | Senior     |  20000 |
++--------+------------+--------+
+4 rows in set (0.02 sec)
