@@ -1,0 +1,202 @@
+/* There are 10 IPL team. write an sql query such that each team play with every other team just once. */
+
+--CREATING THE TABLE AND INSERTING THE VALUES
+drop table teams;
+create table teams(team_code varchar(10), team_name varchar(40));
+
+insert into teams values ('RCB', 'Royal Challengers Bangalore');
+insert into teams values ('MI', 'Mumbai Indians');
+insert into teams values ('CSK', 'Chennai Super Kings');
+insert into teams values ('DC', 'Delhi Capitals');
+insert into teams values ('RR', 'Rajasthan Royals');
+insert into teams values ('SRH', 'Sunrisers Hyderbad');
+insert into teams values ('PBKS', 'Punjab Kings');
+insert into teams values ('KKR', 'Kolkata Knight Riders');
+insert into teams values ('GT', 'Gujarat Titans');
+insert into teams values ('LSG', 'Lucknow Super Giants');
+
+--DISLAYING THE TABLE VALUES
+ SELECT * FROM teams;
++-----------+-----------------------------+
+| team_code | team_name                   |
++-----------+-----------------------------+
+| RCB       | Royal Challengers Bangalore |
+| MI        | Mumbai Indians              |
+| CSK       | Chennai Super Kings         |
+| DC        | Delhi Capitals              |
+| RR        | Rajasthan Royals            |
+| SRH       | Sunrisers Hyderbad          |
+| PBKS      | Punjab Kings                |
+| KKR       | Kolkata Knight Riders       |
+| GT        | Gujarat Titans              |
+| LSG       | Lucknow Super Giants        |
++-----------+-----------------------------+
+10 rows in set (0.00 sec)
+
+/*The solution is */
+WITH cte AS(
+SELECT *,
+DENSE_RANK()  OVER(ORDER BY team_name) as id
+FROM Teams)
+SELECT c1.team_name AS team , c2.team_name AS opposition
+FROM cte c1 INNER JOIN cte c2
+ON c1.id < c2.id
+
++-----------------------------+-----------------------------+
+| team                        | opposition                  |
++-----------------------------+-----------------------------+
+| Chennai Super Kings         | Sunrisers Hyderbad          |
+| Chennai Super Kings         | Royal Challengers Bangalore |
+| Chennai Super Kings         | Rajasthan Royals            |
+| Chennai Super Kings         | Punjab Kings                |
+| Chennai Super Kings         | Mumbai Indians              |
+| Chennai Super Kings         | Lucknow Super Giants        |
+| Chennai Super Kings         | Kolkata Knight Riders       |
+| Chennai Super Kings         | Gujarat Titans              |
+| Chennai Super Kings         | Delhi Capitals              |
+| Delhi Capitals              | Sunrisers Hyderbad          |
+| Delhi Capitals              | Royal Challengers Bangalore |
+| Delhi Capitals              | Rajasthan Royals            |
+| Delhi Capitals              | Punjab Kings                |
+| Delhi Capitals              | Mumbai Indians              |
+| Delhi Capitals              | Lucknow Super Giants        |
+| Delhi Capitals              | Kolkata Knight Riders       |
+| Delhi Capitals              | Gujarat Titans              |
+| Gujarat Titans              | Sunrisers Hyderbad          |
+| Gujarat Titans              | Royal Challengers Bangalore |
+| Gujarat Titans              | Rajasthan Royals            |
+| Gujarat Titans              | Punjab Kings                |
+| Gujarat Titans              | Mumbai Indians              |
+| Gujarat Titans              | Lucknow Super Giants        |
+| Gujarat Titans              | Kolkata Knight Riders       |
+| Kolkata Knight Riders       | Sunrisers Hyderbad          |
+| Kolkata Knight Riders       | Royal Challengers Bangalore |
+| Kolkata Knight Riders       | Rajasthan Royals            |
+| Kolkata Knight Riders       | Punjab Kings                |
+| Kolkata Knight Riders       | Mumbai Indians              |
+| Kolkata Knight Riders       | Lucknow Super Giants        |
+| Lucknow Super Giants        | Sunrisers Hyderbad          |
+| Lucknow Super Giants        | Royal Challengers Bangalore |
+| Lucknow Super Giants        | Rajasthan Royals            |
+| Lucknow Super Giants        | Punjab Kings                |
+| Lucknow Super Giants        | Mumbai Indians              |
+| Mumbai Indians              | Sunrisers Hyderbad          |
+| Mumbai Indians              | Royal Challengers Bangalore |
+| Mumbai Indians              | Rajasthan Royals            |
+| Mumbai Indians              | Punjab Kings                |
+| Punjab Kings                | Sunrisers Hyderbad          |
+| Punjab Kings                | Royal Challengers Bangalore |
+| Punjab Kings                | Rajasthan Royals            |
+| Rajasthan Royals            | Sunrisers Hyderbad          |
+| Rajasthan Royals            | Royal Challengers Bangalore |
+| Royal Challengers Bangalore | Sunrisers Hyderbad          |
++-----------------------------+-----------------------------+
+45 rows in set (0.00 sec)
+
+
+/*Also write another query such that each team plays with every other team twice.*/
+--The solution is 
+WITH cte AS(
+SELECT *,
+DENSE_RANK()  OVER(ORDER BY team_name) as id
+FROM Teams)
+SELECT c1.team_name AS team , c2.team_name AS opposition
+FROM cte c1 INNER JOIN cte c2
+ON c1.id <> c2.id
+
++-----------------------------+-----------------------------+
+| team                        | opposition                  |
++-----------------------------+-----------------------------+
+| Sunrisers Hyderbad          | Chennai Super Kings         |
+| Royal Challengers Bangalore | Chennai Super Kings         |
+| Rajasthan Royals            | Chennai Super Kings         |
+| Punjab Kings                | Chennai Super Kings         |
+| Mumbai Indians              | Chennai Super Kings         |
+| Lucknow Super Giants        | Chennai Super Kings         |
+| Kolkata Knight Riders       | Chennai Super Kings         |
+| Gujarat Titans              | Chennai Super Kings         |
+| Delhi Capitals              | Chennai Super Kings         |
+| Sunrisers Hyderbad          | Delhi Capitals              |
+| Royal Challengers Bangalore | Delhi Capitals              |
+| Rajasthan Royals            | Delhi Capitals              |
+| Punjab Kings                | Delhi Capitals              |
+| Mumbai Indians              | Delhi Capitals              |
+| Lucknow Super Giants        | Delhi Capitals              |
+| Kolkata Knight Riders       | Delhi Capitals              |
+| Gujarat Titans              | Delhi Capitals              |
+| Chennai Super Kings         | Delhi Capitals              |
+| Sunrisers Hyderbad          | Gujarat Titans              |
+| Royal Challengers Bangalore | Gujarat Titans              |
+| Rajasthan Royals            | Gujarat Titans              |
+| Punjab Kings                | Gujarat Titans              |
+| Mumbai Indians              | Gujarat Titans              |
+| Lucknow Super Giants        | Gujarat Titans              |
+| Kolkata Knight Riders       | Gujarat Titans              |
+| Delhi Capitals              | Gujarat Titans              |
+| Chennai Super Kings         | Gujarat Titans              |
+| Sunrisers Hyderbad          | Kolkata Knight Riders       |
+| Royal Challengers Bangalore | Kolkata Knight Riders       |
+| Rajasthan Royals            | Kolkata Knight Riders       |
+| Punjab Kings                | Kolkata Knight Riders       |
+| Mumbai Indians              | Kolkata Knight Riders       |
+| Lucknow Super Giants        | Kolkata Knight Riders       |
+| Gujarat Titans              | Kolkata Knight Riders       |
+| Delhi Capitals              | Kolkata Knight Riders       |
+| Chennai Super Kings         | Kolkata Knight Riders       |
+| Sunrisers Hyderbad          | Lucknow Super Giants        |
+| Royal Challengers Bangalore | Lucknow Super Giants        |
+| Rajasthan Royals            | Lucknow Super Giants        |
+| Punjab Kings                | Lucknow Super Giants        |
+| Mumbai Indians              | Lucknow Super Giants        |
+| Kolkata Knight Riders       | Lucknow Super Giants        |
+| Gujarat Titans              | Lucknow Super Giants        |
+| Delhi Capitals              | Lucknow Super Giants        |
+| Chennai Super Kings         | Lucknow Super Giants        |
+| Sunrisers Hyderbad          | Mumbai Indians              |
+| Royal Challengers Bangalore | Mumbai Indians              |
+| Rajasthan Royals            | Mumbai Indians              |
+| Punjab Kings                | Mumbai Indians              |
+| Lucknow Super Giants        | Mumbai Indians              |
+| Kolkata Knight Riders       | Mumbai Indians              |
+| Gujarat Titans              | Mumbai Indians              |
+| Delhi Capitals              | Mumbai Indians              |
+| Chennai Super Kings         | Mumbai Indians              |
+| Sunrisers Hyderbad          | Punjab Kings                |
+| Royal Challengers Bangalore | Punjab Kings                |
+| Rajasthan Royals            | Punjab Kings                |
+| Mumbai Indians              | Punjab Kings                |
+| Lucknow Super Giants        | Punjab Kings                |
+| Kolkata Knight Riders       | Punjab Kings                |
+| Gujarat Titans              | Punjab Kings                |
+| Delhi Capitals              | Punjab Kings                |
+| Chennai Super Kings         | Punjab Kings                |
+| Sunrisers Hyderbad          | Rajasthan Royals            |
+| Royal Challengers Bangalore | Rajasthan Royals            |
+| Punjab Kings                | Rajasthan Royals            |
+| Mumbai Indians              | Rajasthan Royals            |
+| Lucknow Super Giants        | Rajasthan Royals            |
+| Kolkata Knight Riders       | Rajasthan Royals            |
+| Gujarat Titans              | Rajasthan Royals            |
+| Delhi Capitals              | Rajasthan Royals            |
+| Chennai Super Kings         | Rajasthan Royals            |
+| Sunrisers Hyderbad          | Royal Challengers Bangalore |
+| Rajasthan Royals            | Royal Challengers Bangalore |
+| Punjab Kings                | Royal Challengers Bangalore |
+| Mumbai Indians              | Royal Challengers Bangalore |
+| Lucknow Super Giants        | Royal Challengers Bangalore |
+| Kolkata Knight Riders       | Royal Challengers Bangalore |
+| Gujarat Titans              | Royal Challengers Bangalore |
+| Delhi Capitals              | Royal Challengers Bangalore |
+| Chennai Super Kings         | Royal Challengers Bangalore |
+| Royal Challengers Bangalore | Sunrisers Hyderbad          |
+| Rajasthan Royals            | Sunrisers Hyderbad          |
+| Punjab Kings                | Sunrisers Hyderbad          |
+| Mumbai Indians              | Sunrisers Hyderbad          |
+| Lucknow Super Giants        | Sunrisers Hyderbad          |
+| Kolkata Knight Riders       | Sunrisers Hyderbad          |
+| Gujarat Titans              | Sunrisers Hyderbad          |
+| Delhi Capitals              | Sunrisers Hyderbad          |
+| Chennai Super Kings         | Sunrisers Hyderbad          |
++-----------------------------+-----------------------------+
+90 rows in set (0.00 sec)
+
