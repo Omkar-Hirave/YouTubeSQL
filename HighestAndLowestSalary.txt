@@ -1,0 +1,61 @@
+/*Write a SQL query to print the highest and lowest salary in each department*/
+
+--CREATING THE TABLE AND INSERTING THE VALUES
+create table employee_2611 
+(
+emp_name varchar(10),
+dep_id int,
+salary int
+);
+	insert into employee_2611 values 
+	('Siva',1,30000),('Ravi',2,40000),('Prasad',1,50000),('Sai',2,20000);
+
+--DISPLAYING THE COLUMN VALUES
+SELECT * FROM Employee_2611;
+
++----------+--------+--------+
+| emp_name | dep_id | salary |
++----------+--------+--------+
+| Siva     |      1 |  30000 |
+| Ravi     |      2 |  40000 |
+| Prasad   |      1 |  50000 |
+| Sai      |      2 |  20000 |
++----------+--------+--------+
+4 rows in set (0.00 sec)
+
+/*The solution is */
+--Solution 1: Using cte , group by , aggregation , and case when statement
+
+WITH Salary AS(
+SELECT dep_id , MAX(salary) AS maximum_salary ,MIN(salary) AS minimum_salary
+FROM Employee_2611
+GROUP BY dep_id)
+SELECT e.dep_id ,
+MAX(CASE WHEN salary = minimum_salary THEN emp_name END) AS minimum_department_salary,
+MIN(CASE WHEN salary = maximum_salary THEN emp_name END) AS maximum_department_salary
+FROM Employee e INNER JOIN Salary s 
+ON e.dep_id = s.dep_id 
+GROUP BY dep_id
+
+--Solution 2 Using window function , aggregation and case when statement 
+WITH Salary AS(
+SELECT * ,
+DENSE_RANK() OVER(PARTITION BY dep_id ORDER BY salary DESC) AS maximum_salary,
+DENSE_RANK() OVER(PARTITION by dep_id ORDER BY salary ASC) AS 
+minimum_salary 
+FROM employee_2611)
+SELECT e.dep_id 
+,MAX(CASE WHEN maximum_salary = 1 THEN e.emp_name END ) AS department_highest_salaries,
+MIN(CASE WHEN minimum_salary = 1 THEN e.emp_name END ) AS 
+  department_lowest_salaries
+FROM Employee_2611 e INNER JOIN Salary s
+ON e.dep_id = s.dep_id
+GROUP BY e.dep_id
+
++--------+-----------------------------+----------------------------+
+| dep_id | department_highest_salaries | department_lowest_salaries |
++--------+-----------------------------+----------------------------+
+|      1 | Siva                        | Prasad                     |
+|      2 | Sai                         | Ravi                       |
++--------+-----------------------------+----------------------------+
+2 rows in set (0.01 sec)
