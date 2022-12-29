@@ -1,0 +1,77 @@
+/* Write an SQL query to display the correct message (meaningful message) from the input
+comments_and_translation table. */
+
+--CREATING THE TABLE AND INSERTING THE VALUES
+drop table comments_and_translations;
+create table comments_and_translations(id int, comment varchar(100), translation 	varchar(100));
+
+insert into comments_and_translations values
+(1, 'very good', null),
+(2, 'good', null),
+(3, 'bad', null),
+(4, 'ordinary', null),
+(5, 'cdcdcdcd', 'very bad'),
+(6, 'excellent', null),
+(7, 'ababab', 'not satisfied'),
+(8, 'satisfied', null),
+(9, 'aabbaabb', 'extraordinary'),
+(10, 'ccddccbb', 'medium');
+commit;
+
+--DISPLAYING THE TABLE VALUES
+ SELECT * FROM comments_and_translations;
++------+-----------+---------------+
+| id   | comment   | translation   |
++------+-----------+---------------+
+|    1 | very good | NULL          |
+|    2 | good      | NULL          |
+|    3 | bad       | NULL          |
+|    4 | ordinary  | NULL          |
+|    5 | cdcdcdcd  | very bad      |
+|    6 | excellent | NULL          |
+|    7 | ababab    | not satisfied |
+|    8 | satisfied | NULL          |
+|    9 | aabbaabb  | extraordinary |
+|   10 | ccddccbb  | medium        |
++------+-----------+---------------+
+10 rows in set (0.00 sec)
+
+
+/*The solution is */
+--Solution 1 :Using joins
+SELECT c1.comment AS comment
+FROM comments_and_translations c1 LEFT JOIN comments_and_translations c2
+ON c1.comment = c2.comment
+WHERE c1.translation IS  NULL
+UNION 
+SELECT c1.translation 
+FROM comments_and_translations c1 RIGHT JOIN comments_and_translations c2
+ON c1.translation = c2.translation
+WHERE c1.translation IS  NOT NULL
+--The above solution , however ,will not have proper ordering of elements
+
+
+--Solution 2 : Using case when statement
+SELECT 
+CASE WHEN translation IS NULL THEN comment ELSE translation END AS 'output'
+FROM comments_and_translations
+
+Solution 3 :
+SELECT COALESCE(translation,comment) FROM comments_and_translations
+--In the above solution , COALESCE function will check whether the function is translation IS NULL if it is null it will assign comment value to itself
+
++---------------+
+| output        |
++---------------+
+| very good     |
+| good          |
+| bad           |
+| ordinary      |
+| very bad      |
+| excellent     |
+| not satisfied |
+| satisfied     |
+| extraordinary |
+| medium        |
++---------------+
+10 rows in set (0.00 sec)
