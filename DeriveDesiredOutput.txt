@@ -1,0 +1,77 @@
+
+--CREATING THE TABLE AND INSERTING THE VALUES
+CREATE TABLE source( id int, name  varchar(1));
+CREATE TABLE target(id  int,name  varchar(1));
+
+INSERT INTO source VALUES (1, 'A');
+INSERT INTO source VALUES (2, 'B');
+INSERT INTO source VALUES (3, 'C');
+INSERT INTO source VALUES (4, 'D');
+
+INSERT INTO target VALUES (1, 'A');
+INSERT INTO target VALUES (2, 'B');
+INSERT INTO target VALUES (4, 'X');
+INSERT INTO target VALUES (5, 'F');
+
+--DISPLAYING THE TABLE VALUES
+SELECT * FROM Source;
++------+------+
+| id   | name |
++------+------+
+|    1 | A    |
+|    2 | B    |
+|    3 | C    |
+|    4 | D    |
++------+------+
+4 rows in set (0.00 sec)
+
+SELECT * FROM Target;
++------+------+
+| id   | name |
++------+------+
+|    1 | A    |
+|    2 | B    |
+|    4 | X    |
+|    5 | F    |
++------+------+
+4 rows in set (0.00 sec)
+
+/*The solution is */
+Solution 1 : Using LEFT JOIN , RIGHT JOIN AND Comment
+SELECT s.id as id , 'Mismatch' AS comment
+FROM Source s INNER JOIN Target t
+ON s.id = t.id AND s.name <> t.name 
+UNION
+SELECT s.id as id , 'New in source' AS comment
+FROM Source s LEFT JOIN Target t
+ON s.id = t.id 
+WHERE t.id IS NULL
+UNION
+SELECT t.id AS id , 'New in target' AS comment
+FROM Source s RIGHT JOIN Target t
+ON s.id = t.id 
+WHERE s.id IS NULL
+
+Solution 2:Using FULL OUTER JOIN and CASE WHEN
+SELECT 
+CASE WHEN t.id IS NULL THEN s.id 
+	 WHEN s.id IS NULL THEN t.id
+	 WHEN (s.id = t.id AND s.name <> t.name) THEN s.id
+END AS id 
+,CASE WHEN t.id IS NULL THEN 'New in source'
+	 WHEN s.id IS NULL THEN 'New in target'
+	 WHEN (s.id = t.id AND s.name <> t.name) THEN 'Mismatch'
+	 END as Comment
+FROM Source s FULL JOIN Target t 
+ON s.id = t.id 
+WHERE s.id IS NULL OR t.id IS NULL 
+OR (s.id = t.id AND s.name <> t.name)
+
++------+---------------+
+| id   | comment       |
++------+---------------+
+|    4 | Mismatch      |
+|    3 | New in source |
+|    5 | New in target |
++------+---------------+
+3 rows in set (0.01 sec)
