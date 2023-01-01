@@ -1,0 +1,56 @@
+-- Find n consecutive records where temperature is below zero. And table has a primary key.
+
+CREATING THE TABLE AND INSERTING THE VALUES:
+drop table if exists weather cascade;
+create table if not exists weather
+	(
+		id 					int 				primary key,
+		city 				varchar(50) not null,
+		temperature int 				not null,
+		day 				date				not null
+	);
+
+delete from weather;
+insert into weather values
+	(1, 'London', -1, '2021-01-01','yyyy-mm-dd'),
+	(2, 'London', -2, '2021-01-02','yyyy-mm-dd'),
+	(3, 'London', 4, '2021-01-03','yyyy-mm-dd'),
+	(4, 'London', 1, '2021-01-04','yyyy-mm-dd'),
+	(5, 'London', -2, '2021-01-05','yyyy-mm-dd'),
+	(6, 'London', -5, '2021-01-06','yyyy-mm-dd'),
+	(7, 'London', -7, '2021-01-07','yyyy-mm-dd'),
+	(8, 'London', 5, '2021-01-08','yyyy-mm-dd'),
+	(9, 'London', -20, '2021-01-09','yyyy-mm-dd'),
+	(10, 'London', 20, '2021-01-10','yyyy-mm-dd'),
+	(11, 'London', 22, '2021-01-11','yyyy-mm-dd'),
+	(12, 'London', -1, '2021-01-12','yyyy-mm-dd'),
+	(13, 'London', -2, '2021-01-13','yyyy-mm-dd'),
+	(14, 'London', -2, '2021-01-14','yyyy-mm-dd'),
+	(15, 'London', -4, '2021-01-15','yyyy-mm-dd'),
+	(16, 'London', -9, '2021-01-16','yyyy-mm-dd'),
+	(17, 'London', 0, '2021-01-17','yyyy-mm-dd'),
+	(18, 'London', -10, '2021-01-18','yyyy-mm-dd'),
+	(19, 'London', -11, '2021-01-19','yyyy-mm-dd'),
+	(20, 'London', -12, '2021-01-20','yyyy-mm-dd'))
+	(21, 'London', -11, '2021-01-21','yyyy-mm-dd');
+COMMIT;
+
+select * from weather;
+
+
+/*The solution is */
+WITH t1 AS
+(SELECT * ,
+ROW_NUMBER() OVER(ORDER BY city) as rnk
+FROM weather 
+WHERE temperature < 0)
+,t2 AS (SELECT *
+,id - rnk AS difference
+FROM t1),
+t3 AS(
+SELECT * 
+,COUNT(difference) OVER(PARTITION BY difference) as count_difference
+FROM t2 
+)
+SELECT * FROM t3 
+WHERE count_difference >=4;
